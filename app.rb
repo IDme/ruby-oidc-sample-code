@@ -5,8 +5,8 @@ require "json/jwt"
 require "httparty"
 
 # Get this information by registering your app at https://developer.idmelabs.com
-client_id         = "***REMOVED***"
-client_secret     = "***REMOVED***"
+client_id         = "CLIENT_ID"
+client_secret     = "CLIENT_SECRET"
 redirect_uri      = "http://localhost:4567/callback"
 authorization_url = "https://api.idmelabs.com/oauth/authorize"
 token_url         = "https://api.idmelabs.com/oauth/token"
@@ -21,28 +21,6 @@ use Rack::Session::Pool
 
 # Instantiate OAuth 2.0 client
 client = OAuth2::Client.new(client_id, client_secret, :authorize_url => authorization_url, :token_url => token_url, :scope => scope)
-
-fake_keys = {
-  "keys": [
-    {
-      "kty": "EC",
-      "crv": "P-256",
-      "x": "not",
-      "y": "even",
-      "kid": "real",
-      "use": "sig",
-      "algorithm": "ES256"
-    },
-    {
-      "kty": "RSA",
-      "e": "AQAB",
-      "n": "testing",
-      "kid": "stuff",
-      "use": "sig",
-      "algorithm": "RS256"
-    }
-  ]
-}
 
 get "/" do
   auth_endpoint = client.auth_code.authorize_url(:redirect_uri => redirect_uri)
@@ -72,7 +50,7 @@ get "/profile" do
   id_token = body.tr('""', '')
   
   # Retrieve's the most up-to-date JWT URIs we have configured at the well-known configuration endpoint
-  jwts    = HTTParty.get(attributes_url).body
+  jwts    = HTTParty.get(oidc_config_url).body
   jwk_set = JSON::JWK::Set.new(JSON.parse(jwts))
   
   # Verifies and decodes the payload using the id_token and the jwt keys
