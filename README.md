@@ -7,8 +7,11 @@ In order to run the example you need to have ruby and rubygems installed.
 
 First, install the required gems
 
-`gem install bundler`
-`bundle install`
+`gem install sinatra`
+`gem install rackup`
+`gem install oauth2`
+`gem install httparty
+`
 Next, configure your oauth settings in `app.rb`
 
 ## app.rb

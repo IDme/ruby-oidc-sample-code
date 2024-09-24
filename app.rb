@@ -1,33 +1,32 @@
-require "bundler/setup"
 require "sinatra"
 require "oauth2"
 require "json/jwt"
 require "httparty"
 
 # Get this information by registering your app at https://developer.idmelabs.com
-client_id         = "CLIENT_ID"
-client_secret     = "CLIENT_SECRET"
+client_id         = "***REMOVED***"
+client_secret     = "***REMOVED***"
 redirect_uri      = "http://localhost:4567/callback"
 authorization_url = "https://api.idmelabs.com/oauth/authorize"
 token_url         = "https://api.idmelabs.com/oauth/token"
-attributes_url    = "https://api.idmelabs.com/api/public/v3/userinfo.json"
+userinfo_url      = "https://api.idmelabs.com/api/public/v3/userinfo.json"
 oidc_config_url   = "https://api.idmelabs.com/oidc/.well-known/jwks"
 
 # Possible scope values: "military", "student", "responder", "teacher"
-scope = "login"
+scope = "openid login"
 
 # Enable sessions
 use Rack::Session::Pool
 
 # Instantiate OAuth 2.0 client
-client = OAuth2::Client.new(client_id, client_secret, :authorize_url => authorization_url, :token_url => token_url, :scope => scope)
+client = OAuth2::Client.new(client_id, client_secret, :authorize_url => authorization_url, :token_url => token_url)
 
 get "/" do
-  auth_endpoint = client.auth_code.authorize_url(:redirect_uri => redirect_uri)
-
+  auth_endpoint = client.auth_code.authorize_url(:redirect_uri => redirect_uri, :scope => scope)
+  
   <<-HTML
   <div id="idme-verification">
-    <a href="https://api.idmelabs.com/oauth/authorize?client_id=***REMOVED***&redirect_uri=http://localhost:4567/callback&response_type=code&scope=openid login&state=488e864b">
+    <a href="#{auth_endpoint}">
       <img src="https://s3.amazonaws.com/idme/developer/idme-buttons/assets/img/signin.svg" height="50"/>
     </a>
   </div>
@@ -44,7 +43,7 @@ end
 get "/profile" do
   # Retrieve the user's attributes with the access_token we saved in the session from the "/callback" route
   token = session[:oauth_token]
-  body  = token.get(attributes_url).body
+  body  = token.get(userinfo_url).body
   
   # Trims the "" from the response. This required because we pass back the response malformed. TODO: Open a product intake ticket to investigate
   id_token = body.tr('""', '')
