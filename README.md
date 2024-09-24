@@ -10,8 +10,8 @@ First, install the required gems
 `gem install sinatra`
 `gem install rackup`
 `gem install oauth2`
-`gem install httparty
-`
+`gem install httparty`
+
 Next, configure your oauth settings in `app.rb`
 
 ## app.rb
