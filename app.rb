@@ -4,8 +4,8 @@ require "json/jwt"
 require "httparty"
 
 # Get this information by registering your app at https://developer.idmelabs.com
-client_id         = "***REMOVED***"
-client_secret     = "***REMOVED***"
+client_id         = "CLIENT_ID"
+client_secret     = "CLIENT_SECRET"
 redirect_uri      = "http://localhost:4567/callback"
 authorization_url = "https://api.idmelabs.com/oauth/authorize"
 token_url         = "https://api.idmelabs.com/oauth/token"
